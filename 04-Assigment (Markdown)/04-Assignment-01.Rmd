@@ -1,0 +1,92 @@
+---
+title: "Assignment-1"
+author: "Amine Ceyda TANDOGAN"
+date: "21/01/2022"
+output: word_document
+---
+
+```{r include=FALSE}
+library(tidyverse)
+library(dplyr)
+```
+
+# Q1 : How many characters do have at least one starship? List the names of the characters having at least one starship
+```{r echo=FALSE}
+starwarsDF1 <- starwars %>% 
+  select(name,starships) %>% 
+  filter(starships !="character(0)" )
+nlist<-starwarsDF1$name
+print("List the names of the characters having at least one starship:")
+nlist
+
+```
+
+# Q2 : Get the frequencies of the eye color of the characters. Rank them from most to least
+```{r echo=FALSE}
+starwarsDF2 <- starwars %>% 
+  group_by(eye_color) %>% 
+  summarise(frequency_ = n_distinct(name)) %>% 
+  arrange(desc(frequency_))
+starwarsDF2
+
+```
+
+# Q3 : According to the data available, what are the mean (average) age values across each species? Find the 3 oldest species. Note that in the data, there is no age column, instead there is a birth_year column. This column represents how many years before the Battle of Yavin the character was born. So take this column as the ages of characters at the Battle of Yavin and calculate the mean.
+```{r echo=FALSE}
+starwarsDF3<-starwars %>%
+  group_by(species) %>%
+  summarise(avg = mean(birth_year, na.rm=TRUE)) %>%
+  arrange(desc(avg))
+starwarsDF3
+print("Three oldest species")
+starwarsDF3$species[1:3]
+
+```
+
+# Q4 : Create a new data set by adding a new observation to this data. This observation should be based on your own character (your name or nickname, your weight and height, your homeworld, your starships etc). Note that you can pick one or more than one Star Wars films in which you played as a movie star.
+```{r echo=FALSE}
+starwarsDF4 <- starwars %>% 
+  add_row(name="Amine Ceyda Tandogan",height=167,mass=49,hair_color="brown",skin_color="white",eye_color="brown",birth_year=198, sex="feminine",gender="feminine",homeworld="Tatooine ",species="Human") 
+
+l<-length(starwarsDF4$films)
+
+starwarsDF4$films[l]<-c("The Empire Strikes Back")
+starwarsDF4$vehicles[l]<-c("Zephyr-G swoop bike")
+starwarsDF4$starships[l]<-c("	X-wing")
+print("The last row of the new data.")
+starwarsDF4[l,]
+
+```
+
+# Q5 : Calculate the body mass index (BMI) values (dividing the mass value in kg to the square of the height value in meter) for all observations and categorize the observations as underweight (BMI below 18.5), healthy (BMI between 18.5-24.99), overweight (BMI between 25.0-29.99) and obese (BMI above 30.0). Add these two variables to your new data created at the 4th question.
+```{r echo=FALSE}
+starwarsDF4 <- starwarsDF4  %>% 
+  mutate(bmi=(mass)/((height/100)^2)) %>% 
+  mutate(bmi_group = ifelse(bmi<18.5, "underweight",(ifelse(bmi>18.4 & bmi<25,"healthy",ifelse(bmi>29.9 & bmi<30,"overweight","obese")))))
+
+bmi_ <-starwarsDF4 %>% 
+  select(bmi,bmi_group)
+bmi_
+```
+
+# Q6 : Plot the distribution of ages less than 100 by BMI groups. (i.e. use filter function to select the ages less then 100)
+```{r echo=FALSE, fig.align='center',fig.cap='Figure 1. Distribution of ages less than 100 by BMI groups' }
+ggplot(data = starwarsDF4 %>% filter(birth_year<100)) +
+  geom_point(mapping = aes(x = bmi_group, y=birth_year)) 
+
+```
+
+# Q7 : By plotting a graph, show the relationship between age and BMI values (use point and line at the same time). Re-plot the same graph after filtering the data as both age and BMI less than 100.
+```{r echo=FALSE, fig.align='center',fig.cap='Figure2. Relationship between age and BMI values.'}
+ggplot(data = starwarsDF4 ) +
+  geom_point(mapping = aes(x = bmi, y = birth_year)) +
+  geom_smooth(mapping = aes(x = bmi, y = birth_year))
+
+```
+```{r echo=FALSE, fig.align='center',fig.cap='Figure3. The same graph after filtering the data as both age and BMI less than 100.'}
+ggplot(data = starwarsDF4 %>% filter(birth_year<100,bmi<100)) +
+  geom_point(mapping = aes(x = bmi, y = birth_year)) +
+  geom_smooth(mapping = aes(x = bmi, y = birth_year))
+```
+
+**Amine Ceyda Tandogan 2018555061 CEN429 morning**

@@ -1,0 +1,91 @@
+---
+title: "ASSIGNMENT-3"
+author: "Amine Ceyda Tandogan"
+date: "21/01/2022"
+output: word_document
+---
+
+```{r include=FALSE}
+library(tidyverse)
+library(stringr)
+
+set.seed(2018555061)
+
+```
+# Q1 :  1.          Write a function that finds a prime number(s) given a set of numbers. Your function also provides prime factors of non-prime numbers. The function you will write should return the prime number(s) given in this vector and the non-prime number(s) with their prime factors. For example you have a vector of numbers like (89, 107, 597, 931, 1083). Your result will be
+## Prime numbers : 89 107 & Non-prime numbers : 597 [3 199]  931 [7 7 19] 1083 [3 19 19]
+```{r echo=FALSE}
+question1<-function(numbers){
+  prime<-vector("list",length(numbers)) 
+  non_prime<-vector("list",length(numbers))
+  
+  for(i in seq_along(numbers)){
+    div<-2
+    flag<-0
+    prime_factors<-NULL
+    stopifnot(numbers[[i]]>0)         #to check if the incoming vector is positive or not
+    if(numbers[[i]]>=2){              #If the number is less than 2, it will automatically be non-prime.
+      while(div<numbers[[i]]){
+        if(numbers[[i]]%%div==0){
+          flag<-1
+          break
+        }
+        div<-div+1
+      }
+      if(flag){
+        prime_factors<-NULL
+        div<-2
+        num_<-numbers[[i]]
+        while(div<=num_){
+          if(num_%%div==0){
+            prime_factors<-c(prime_factors,div)
+            num_<-num_/div
+          }
+          else div<-div+1
+        }
+        
+        non_prime[[i]]<-str_c(numbers[[i]],"[",str_c(prime_factors,collapse=" "),"]",sep=" ")
+      }
+      else{
+        prime[[i]]<-numbers[[i]]
+      }
+    }else{
+      
+      non_prime[[i]]<-numbers[[i]]
+    }
+    
+  }
+  
+  print("Prime Numbers:")
+  print(unlist(prime))
+  print("Non-Prime Numbers with their prime factors:")
+  print(unlist(non_prime))
+}
+
+
+numbers<-c(89,107, 597, 931, 1083)
+question1(numbers)
+```
+
+# Q2 :   Write a function that finds the letter numbers of all words in a given text and sorts the text according to those numbers from words with few letters to words with many letters. Sort the words containing the same number of letters alphabetically.For having text, you may use Sentences in tidyverse. Select 5 or 6 sentences randomly from Sentences.
+```{r echo=FALSE}
+question2<-function(){
+  str1ng<-function()sample(stringr::sentences,size=6) 
+  
+  str<-paste(str1ng(), collapse=" ")
+  str<-str_split(str, boundary("word"))[[1]] # to split these sentences into words 
+  
+  vector_word<-unlist(str)
+  print("Number of total word in paragraf :")
+  print(length(vector_word))
+  print("Ordered pragraf:")
+  vector_word<-str_sort(vector_word, locale = "en")
+  ordered_str<-vector_word[order(nchar(vector_word))] 
+  paste(ordered_str,collapse=" ")
+  
+}
+
+question2()
+```
+
+**Amine Ceyda Tandogan 2018555061 CEN429 morning**
